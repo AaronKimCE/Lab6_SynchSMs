@@ -19,6 +19,9 @@ volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer
 unsigned long _avr_timer_M = 1;
 unsigned long _avr_timer_cntcurr = 0;
 
+enum Timer_States{LED_1, LED_2, LED_3} Timer_State; //Enumerating states
+unsigned char Output;
+
 void TimerOn() { 
     TCCR1B = 0x0B;
     OCR1A = 125;
@@ -51,15 +54,44 @@ void TimerSet(unsigned long M) {
     _avr_timer_cntcurr = _avr_timer_M;
 }
 
+void TickSM() {
+    // State Transitions
+    switch(Timer_State) {
+      case LED_1:
+        Timer_State = LED_2;
+        break;
+      case LED_2:
+        Timer_State = LED_3;
+        break;
+      case LED_3:
+        Timer_State = LED_1;
+        break;
+    }
+    // State Actions
+    switch(Timer_State) {
+      case LED_1:
+        Output = 0x01;
+        break;
+      case LED_2:
+        Output = 0x02;
+        break;
+      case LED_3:
+        Output = 0x04;
+        break;
+    } 
+}
+
 int main(void) {
-    DDRB = 0xFF;
-    PORTB = 0x00;
-    TimerSet(1000);
+    DDRA = 0x00; PORTA = 0xFF; // PORTA = Inputs
+    DDRB = 0xFF; PORTB = 0x00; // PORTB = Outputs
+    Timer_State = LED_1; // Setting initial state   
+    TimerSet(1000); // Initialize the timer with period 1000 ms
     TimerOn();
-    unsigned char tmpB = 0x00;
+
+    // Execute SM
     while (1) {
-      tmpB = ~tmpB;
-      PORTB = tmpB;
+      TickSM();
+      PORTB = Output;
       while (!TimerFlag);
       TimerFlag = 0;
     }
