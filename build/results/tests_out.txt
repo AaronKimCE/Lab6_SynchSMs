@@ -1,7 +1,7 @@
-Breakpoint 1 at 0x290: file source/main.c, line 92.
+Breakpoint 1 at 0x448: file source/main.c, line 157.
 Note: automatically using hardware breakpoints for read-only addresses.
 ======================================================
 Running all tests..."
 
-"PINA: 0x00, PINB: 0x00 => PORTC: 0"...test/tests.gdb:35: Error in sourced command file:
-Remote connection closed
+"PINA: 0x00, PINB: 0x00 => PORTC: 0"...======================================================
+Quitting: Remote doesn't know how to detach
