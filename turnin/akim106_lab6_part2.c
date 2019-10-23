@@ -22,7 +22,7 @@ unsigned long _avr_timer_cntcurr = 0;
 enum Timer_States{LED_1, LED_2, LED_3, Held_1, Wait, Held_2} Timer_State; //Enumerating states
 unsigned char Output;
 unsigned char B1;
-const long ms300 = 37;
+const long ms300 = 30;
 long counter = 0;
 
 void TimerOn() { 
@@ -150,7 +150,7 @@ int main(void) {
     DDRA = 0x00; PORTA = 0xFF; // PORTA = Inputs
     DDRB = 0xFF; PORTB = 0x00; // PORTB = Outputs
     Timer_State = LED_3; // Setting initial state   
-    TimerSet(1); // Initialize the timer with period 1000 ms
+    TimerSet(10); // Initialize the timer with period 1000 ms
     TimerOn();
 
     // Execute SM

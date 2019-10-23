@@ -1,7 +1,7 @@
 /*	Author: akim106
  *  Partner(s) Name: 
  *	Lab Section:
- *	Assignment: Lab 6  Exercise 2
+ *	Assignment: Lab 6  Exercise 1
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -19,11 +19,8 @@ volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer
 unsigned long _avr_timer_M = 1;
 unsigned long _avr_timer_cntcurr = 0;
 
-enum Timer_States{LED_1, LED_2, LED_3, Held_1, Wait, Held_2} Timer_State; //Enumerating states
+enum Timer_States{LED_1, LED_2, LED_3} Timer_State; //Enumerating states
 unsigned char Output;
-unsigned char B1;
-const long ms300 = 37;
-long counter = 0;
 
 void TimerOn() { 
     TCCR1B = 0x0B;
@@ -58,73 +55,17 @@ void TimerSet(unsigned long M) {
 }
 
 void TickSM() {
-	B1 = ~PINA & 0x01; // Getting Input
     // State Transitions
     switch(Timer_State) {
       case LED_1:
-	    if (B1) {
-	   	   Timer_State = Held_1;
-		   break;
-		} else if (counter < ms300) {
-		   Timer_State = LED_1;
-		   counter++;
-		   break;
-		} else {
-           Timer_State = LED_2;
-		   counter = 0;
-           break;
-		}
+        Timer_State = LED_2;
+        break;
       case LED_2:
-	    if (B1) {
-	       Timer_State = Held_1;
-		   break;
-	    } else if (counter < ms300) {
-	       Timer_State = LED_2;
-	       counter++;
-		   break;
-	    } else {
-		   Timer_State = LED_3;
-		   counter = 0;
-		   break;
-		}
+        Timer_State = LED_3;
+        break;
       case LED_3:
-	    if (B1) {
-		    Timer_State = Held_1;
-		    break;
-		} else if (counter < ms300){
-		    Timer_State = LED_3;
-			counter++;
-		    break;
-	    } else {
-			Timer_State = LED_1;
-			counter = 0;
-			break;
-		}
-	  case Held_1:
-	    if (B1) {
-			Timer_State = Held_1;
-			break;
-		} else {
-			Timer_State = Wait;
-			break;
-		}
-	  case Wait:
-	    if (B1) {
-			Timer_State = Held_2;
-			break;
-		} else {
-			Timer_State = Wait;
-			break;
-		}
-	  case Held_2:
-	    if (B1) {
-			Timer_State = Held_2;
-			break;
-		} else {
-			Timer_State = LED_1;
-			counter = 0;
-			break;
-		}
+        Timer_State = LED_1;
+        break;
     }
     // State Actions
     switch(Timer_State) {
@@ -137,20 +78,14 @@ void TickSM() {
       case LED_3:
         Output = 0x04;
         break;
-	  case Held_1:
-	    break;
-	  case Wait:
-	    break;
-	  case Held_2:
-	    break;
     } 
 }
 
 int main(void) {
     DDRA = 0x00; PORTA = 0xFF; // PORTA = Inputs
     DDRB = 0xFF; PORTB = 0x00; // PORTB = Outputs
-    Timer_State = LED_3; // Setting initial state   
-    TimerSet(1); // Initialize the timer with period 1000 ms
+    Timer_State = LED_1; // Setting initial state   
+    TimerSet(1000); // Initialize the timer with period 1000 ms
     TimerOn();
 
     // Execute SM

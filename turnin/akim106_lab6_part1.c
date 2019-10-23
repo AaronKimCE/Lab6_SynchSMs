@@ -85,7 +85,7 @@ int main(void) {
     DDRA = 0x00; PORTA = 0xFF; // PORTA = Inputs
     DDRB = 0xFF; PORTB = 0x00; // PORTB = Outputs
     Timer_State = LED_1; // Setting initial state   
-    TimerSet(124); // Initialize the timer with period 125 ms
+    TimerSet(1000); // Initialize the timer with period 1000 ms
     TimerOn();
 
     // Execute SM
